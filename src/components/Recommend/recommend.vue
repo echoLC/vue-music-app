@@ -93,7 +93,7 @@
     bottom: 0
     .recommend-content
       height: 100%
-      overflow: hidden
+      overflow: auto
       .slider-wrapper
         position: relative
         width: 100%
