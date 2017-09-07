@@ -11,6 +11,9 @@
             </ul>
       </li>
     </ul>
+    <div class="loading-container" v-if="!data.length">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
