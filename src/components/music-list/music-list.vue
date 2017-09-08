@@ -18,18 +18,18 @@
 
   export default {
     props: {
-//      bgImage: {
-//        type: String,
-//        default: ''
-//      },
-//      songs: {
-//        type: Array,
-//        default: []
-//      },
-//      title: {
-//        type: String,
-//        default: ''
-//      }
+      bgImage: {
+        type: String,
+        default: ''
+      },
+      songs: {
+        type: Array,
+        default: []
+      },
+      title: {
+        type: String,
+        default: ''
+      }
     },
     data() {
       return {
