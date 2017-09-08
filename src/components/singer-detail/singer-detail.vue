@@ -6,8 +6,8 @@
 
 <script type="text/ecmascript-6">
   import SingerDetailList from 'components/singer-detail-list/singer-detail-list'
-//  import {getSingerDetail} from 'api/singer'
-//  import {ERR_OK} from 'api/config'
+  import {getSingerDetail} from 'api/singer'
+  import {ERR_OK} from 'api/config'
 //  import {createSong} from 'common/js/song'
 //  import {mapGetters} from 'vuex'
 
@@ -16,12 +16,23 @@
 
     },
     data() {
-      return {}
+      return {
+        singerDetail: {}
+      }
     },
     created() {
-
+      this._getSingerDetail()
     },
     methods: {
+      _getSingerDetail() {
+        let id = this.$route.params.id
+        getSingerDetail(id).then((res) => {
+          if (res.code === ERR_OK) {
+            this.singerDetail = res.data
+          }
+          console.log(this.singerDetail)
+        })
+      }
     },
     components: {
       SingerDetailList
