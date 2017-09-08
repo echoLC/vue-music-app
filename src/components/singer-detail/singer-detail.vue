@@ -9,11 +9,13 @@
   import {getSingerDetail} from 'api/singer'
   import {ERR_OK} from 'api/config'
 //  import {createSong} from 'common/js/song'
-//  import {mapGetters} from 'vuex'
+  import {mapGetters} from 'vuex'
 
   export default {
     computed: {
-
+      ...mapGetters([
+        'singer'
+      ])
     },
     data() {
       return {
@@ -22,6 +24,7 @@
     },
     created() {
       this._getSingerDetail()
+      console.log(this.singer)
     },
     methods: {
       _getSingerDetail() {
@@ -30,7 +33,6 @@
           if (res.code === ERR_OK) {
             this.singerDetail = res.data
           }
-          console.log(this.singerDetail)
         })
       }
     },
