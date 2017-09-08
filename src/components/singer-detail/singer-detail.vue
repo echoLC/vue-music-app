@@ -1,11 +1,11 @@
 <template>
   <transition name="slide">
-    <singer-detail-list></singer-detail-list>
+    <music-list></music-list>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
-  import SingerDetailList from 'components/singer-detail-list/singer-detail-list'
+  import MusicList from 'components/music-list/music-list'
   import {getSingerDetail} from 'api/singer'
   import {ERR_OK} from 'api/config'
 //  import {createSong} from 'common/js/song'
@@ -19,25 +19,25 @@
     },
     data() {
       return {
-        singerDetail: {}
+        songsList: []
       }
     },
     created() {
       this._getSingerDetail()
-      console.log(this.singer)
     },
     methods: {
       _getSingerDetail() {
         let id = this.$route.params.id
         getSingerDetail(id).then((res) => {
           if (res.code === ERR_OK) {
-            this.singerDetail = res.data
+            this.songsList = res.data.list
+            console.log(this.songsList)
           }
         })
       }
     },
     components: {
-      SingerDetailList
+      MusicList
     }
   }
 </script>
