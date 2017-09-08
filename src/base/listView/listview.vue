@@ -172,7 +172,7 @@
     position: relative
     width: 100%
     height: 100%
-    overflow: auto
+    overflow: hidden
     background: $color-background
     .list-group
       padding-bottom: 30px
