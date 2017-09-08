@@ -1,20 +1,103 @@
 <template>
   <div class="player" v-show="playlist.length">
-    <transition>
+    <transition name="normal"
+                @enter="enter"
+                @after-enter="afterEnter"
+                @leave="leave"
+                @after-leave="afterLeave">
       <div class="normal-player" v-show="fullScreen">
-        全屏播放器
+        <div class="background">
+          <img width="100%" height="100%" :src="currentSong.image">
+        </div>
+        <div class="top">
+          <div class="back" @click="back">
+            <i class="icon-back"></i>
+          </div>
+          <h1 class="title" v-html="currentSong.name"></h1>
+          <h2 class="subtitle" v-html="currentSong.singer"></h2>
+        </div>
+        <div class="middle">
+          <div class="middle-l" ref="middleL">
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd">
+                <img class="image" :src="currentSong.image">
+              </div>
+            </div>
+            <!--<div class="playing-lyric-wrapper">-->
+              <!--<div class="playing-lyric">{{playingLyric}}</div>-->
+            <!--</div>-->
+          </div>
+          <!--<scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">-->
+            <!--<div class="lyric-wrapper">-->
+              <!--<div v-if="currentLyric">-->
+                <!--<p ref="lyricLine"-->
+                   <!--class="text"-->
+                   <!--:class="{'current': currentLineNum ===index}"-->
+                   <!--v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</scroll>-->
+        </div>
+        <div class="bottom">
+          <!--<div class="dot-wrapper">-->
+            <!--<span class="dot" :class="{'active':currentShow==='cd'}"></span>-->
+            <!--<span class="dot" :class="{'active':currentShow==='lyric'}"></span>-->
+          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+          <!--<div class="progress-wrapper">-->
+            <!--<span class="time time-l">{{format(currentTime)}}</span>-->
+            <!--<div class="progress-bar-wrapper">-->
+              <!--<progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>-->
+            <!--</div>-->
+            <!--<span class="time time-r">{{format(currentSong.duration)}}</span>-->
+          <!--</div>-->
+          <div class="operators">
+            <div class="icon i-left">
+              <i></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-prev"></i>
+            </div>
+            <div class="icon i-center">
+              <i></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon-next"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon icon-not-favorite"></i>
+            </div>
+          </div>
+        </div>
       </div>
     </transition>
     <transition name="mini">
-      <div class="mini-player" v-show="!fullScreen">
-      迷你播放器
+      <div class="mini-player" v-show="!fullScreen" @click="open">
+        <div class="icon">
+          <img width="40" height="40" :src="currentSong.image">
+        </div>
+        <div class="text">
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc" v-html="currentSong.singer"></p>
+        </div>
+        <!--<div class="control">-->
+          <!--<progress-circle :radius="radius" :percent="percent">-->
+            <!--<i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>-->
+          <!--</progress-circle>-->
+        <!--</div>-->
+        <div class="control">
+          <i class="icon-playlist"></i>
+        </div>
       </div>
     </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
+  import animations from 'create-keyframe-animation'
+  import {prefixStyle} from 'common/js/dom'
+
+  const transform = prefixStyle('transform')
 
   export default {
     data() {
@@ -31,13 +114,71 @@
     computed: {
       ...mapGetters([
         'fullScreen',
-        'playlist'
+        'playlist',
+        'currentSong'
       ])
     },
     created() {
       this.touch = {}
     },
     methods: {
+      back() {
+        this.setFullScreen(false)
+      },
+      open() {
+        this.setFullScreen(true)
+      },
+      enter(el, done) {
+        const {x, y, scale} = this._getPosAndScale()
+
+        let animation = {
+          0: {
+            transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+          },
+          60: {
+            transform: `translate3d(0, 0, 0) scale(1.1)`
+          },
+          100: {
+            transform: `translate3d(0,0,0) scale(1)`
+          }
+        }
+
+        animations.registerAnimation({
+          name: 'move',
+          animation,
+          preset: {
+            duration: 400,
+            easing: 'linear'
+          }
+        })
+
+        animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+      },
+      afterEnter() {
+        animations.unregisterAnimation('move')
+        this.$refs.cdWrapper.style.animation = ''
+      },
+      leave(el, done) {
+        this.$refs.cdWrapper.style.transition = 'all 0.4s'
+        const {x, y, scale} = this._getPosAndScale()
+        this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+        this.$refs.cdWrapper.addEventListener('transitionend', done)
+      },
+      afterLeave() {
+        this.$refs.cdWrapper.style.transition = ''
+        this.$refs.cdWrapper.style[transform] = ''
+      },
+      _getPosAndScale() {
+        const [targetWidth, paddingLeft, paddingBottom, paddingTop] = [40, 40, 30, 80]
+        const width = window.innerWidth * 0.8
+        const scale = targetWidth / width
+        const x = -(window.innerWidth / 2 - paddingLeft)
+        const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+        return {x, y, scale}
+      },
+      ...mapMutations({
+        setFullScreen: 'SET_FULL_SCREEN'
+      })
     },
     watch: {
 
