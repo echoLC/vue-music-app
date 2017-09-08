@@ -80,10 +80,8 @@
     },
     watch: {
       scrollY(newVal) {
+        let [scale, zIndex, blur] = [1, 0, 0]
         let translateY = Math.max(this.minTransalteY, newVal)
-        let scale = 1
-        let zIndex = 0
-        let blur = 0
         const percent = Math.abs(newVal / this.imageHeight)
         if (newVal > 0) {
           scale = 1 + percent
@@ -94,18 +92,20 @@
 
         this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
         this.$refs.filter.style[backdrop] = `blur(${blur}px)`
+        let bgImageStyle = this.$refs.bgImage.style
+        let playBtnStyle = this.$refs.playBtn.style
         if (newVal < this.minTransalteY) {
           zIndex = 10
-          this.$refs.bgImage.style.paddingTop = 0
-          this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
-          this.$refs.playBtn.style.display = 'none'
+          bgImageStyle.paddingTop = 0
+          bgImageStyle.height = `${RESERVED_HEIGHT}px`
+          playBtnStyle.display = 'none'
         } else {
-          this.$refs.bgImage.style.paddingTop = '70%'
-          this.$refs.bgImage.style.height = 0
-          this.$refs.playBtn.style.display = ''
+          bgImageStyle.paddingTop = '70%'
+          bgImageStyle.height = 0
+          playBtnStyle.display = ''
         }
-        this.$refs.bgImage.style[transform] = `scale(${scale})`
-        this.$refs.bgImage.style.zIndex = zIndex
+        bgImageStyle[transform] = `scale(${scale})`
+        bgImageStyle.zIndex = zIndex
       }
     },
     components: {
