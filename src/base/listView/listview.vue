@@ -113,6 +113,9 @@
       scroll(pos) {
         this.scrollY = pos.y
       },
+      refresh() {
+        this.$refs.listview.refresh()
+      },
       _calculateHeight() {
         this.listHeight = []
         const list = this.$refs.listGroup
