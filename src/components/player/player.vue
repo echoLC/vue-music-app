@@ -19,8 +19,8 @@
         <div class="middle">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
-                <img :class="cdCls" class="image" :src="currentSong.image">
+              <div class="cd" :class="cdCls">
+                <img class="image" :src="currentSong.image">
               </div>
             </div>
             <!--<div class="playing-lyric-wrapper">-->
@@ -43,25 +43,25 @@
             <!--<span class="dot" :class="{'active':currentShow==='cd'}"></span>-->
             <!--<span class="dot" :class="{'active':currentShow==='lyric'}"></span>-->
           <!--&lt;!&ndash;</div>&ndash;&gt;-->
-          <!--<div class="progress-wrapper">-->
-            <!--<span class="time time-l">{{format(currentTime)}}</span>-->
+          <div class="progress-wrapper">
+            <span class="time time-l">{{formatTime(currentTime)}}</span>
             <!--<div class="progress-bar-wrapper">-->
               <!--<progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>-->
             <!--</div>-->
-            <!--<span class="time time-r">{{format(currentSong.duration)}}</span>-->
-          <!--</div>-->
+            <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="pre"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i :class="playIcon" @click="togglePlaying"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="next" :class="disableCls"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -89,7 +89,7 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
@@ -122,11 +122,15 @@
       miniPlayIcon() {
         return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
       },
+      disableCls() {
+        return this.songReady ? '' : 'disable'
+      },
       ...mapGetters([
         'fullScreen',
         'playlist',
         'currentSong',
-        'playing'
+        'playing',
+        'currentIndex'
       ])
     },
     created() {
@@ -182,6 +186,57 @@
       togglePlaying() {
         this.setPlayingState(!this.playing)
       },
+      next() {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.setCurrentIndex(index)
+        this.songReady = false
+      },
+      pre() {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.setCurrentIndex(index)
+        this.songReady = false
+      },
+      ready() {
+        this.songReady = true
+      },
+      error() {
+        this.songReady = true
+      },
+      updateTime(e) {
+        this.currentTime = e.target.currentTime
+      },
+      formatTime(time) {
+        time = time | 0
+        const minute = time / 60 | 0
+        const second = this._pad(time % 60)
+        return `${minute}:${second}`
+      },
+      _pad(num, n = 2) {
+        let len = num.toString().length
+        while (len < n) {
+          num = '0' + num
+          len++
+        }
+        return num
+      },
       _getPosAndScale() {
         const [targetWidth, paddingLeft, paddingBottom, paddingTop] = [40, 40, 30, 80]
         const width = window.innerWidth * 0.8
@@ -192,7 +247,8 @@
       },
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlayingState: 'SET_PLAYING_STATE'
+        setPlayingState: 'SET_PLAYING_STATE',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     },
     watch: {
