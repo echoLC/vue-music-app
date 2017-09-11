@@ -37,7 +37,6 @@
     },
     methods: {
       _getMusicList() {
-        console.log(this.topList)
         if (!this.topList.id) {
           this.$router.push('/rank')
           return
