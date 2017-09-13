@@ -1,41 +1,30 @@
 <template>
-  <!--<scroll ref="suggest"-->
-          <!--class="suggest"-->
-          <!--:data="result"-->
-          <!--:pullup="pullup"-->
-          <!--:beforeScroll="beforeScroll"-->
-          <!--@scrollToEnd="searchMore"-->
-          <!--@beforeScroll="listScroll"-->
-  <!--&gt;-->
-    <!--<ul class="suggest-list">-->
-      <!--<li @click="selectItem(item)" class="suggest-item" v-for="item in result">-->
-        <!--<div class="icon">-->
-          <!--<i :class="getIconCls(item)"></i>-->
-        <!--</div>-->
-        <!--<div class="name">-->
-          <!--<p class="text" v-html="getDisplayName(item)"></p>-->
-        <!--</div>-->
-      <!--</li>-->
-      <!--<loading v-show="hasMore" title=""></loading>-->
-    <!--</ul>-->
-    <!--<div v-show="!hasMore && !result.length" class="no-result-wrapper">-->
-      <!--<no-result title="抱歉，暂无搜索结果"></no-result>-->
-    <!--</div>-->
-  <!--</scroll>-->
+  <div class="suggest">
+    <ul class="suggest-list">
+      <li class="suggest-item" v-for="item in result">
+        <div class="icon">
+          <i :class="getIconCls(item)"></i>
+        </div>
+        <div class="name">
+          <p class="text" v-html="getDisplayName(item)"></p>
+        </div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
 //  import Scroll from 'base/scroll/scroll'
 //  import Loading from 'base/loading/loading'
 //  import NoResult from 'base/no-result/no-result'
-//  import {search} from 'api/search'
-//  import {ERR_OK} from 'api/config'
-//  import {createSong} from 'common/js/song'
+  import {search} from 'api/search'
+  import {ERR_OK} from 'api/config'
+  import {createSong} from 'common/js/song'
 //  import {mapMutations, mapActions} from 'vuex'
 //  import Singer from 'common/js/singer'
 //
-//  const TYPE_SINGER = 'singer'
-//  const perpage = 20
+  const TYPE_SINGER = 'singer'
+  const perpage = 20
 
   export default {
     props: {
@@ -58,10 +47,52 @@
       }
     },
     methods: {
-
+      search() {
+        search(this.query, this.page, this.showSinger, perpage).then((res) => {
+          if (res.code === ERR_OK) {
+            this.result = this._genResult(res.data)
+            console.log(this.result)
+          }
+        })
+      },
+      getIconCls(item) {
+        if (item.type === TYPE_SINGER) {
+          return 'icon-mine'
+        } else {
+          return 'icon-music'
+        }
+      },
+      getDisplayName(item) {
+        if (item.type === TYPE_SINGER) {
+          return `${item.singername}`
+        } else {
+          return `${item.name}-${item.singer}`
+        }
+      },
+      _normalizeSongs(list) {
+        let ret = []
+        list.forEach((musicData) => {
+          if (musicData.songid && musicData.albummid) {
+            ret.push(createSong(musicData))
+          }
+        })
+        return ret
+      },
+      _genResult(data) {
+        let ret = []
+        if (data.zhidao && data.zhida.singerid) {
+          ret.push({...data.zhida, ...{type: TYPE_SINGER}})
+        }
+        if (data.song) {
+          ret = ret.concat(this._normalizeSongs(data.song.list))
+        }
+        return ret
+      }
     },
     watch: {
-
+      query(newQuery) {
+        this.search()
+      }
     },
     components: {
 
