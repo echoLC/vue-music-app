@@ -1,7 +1,19 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <search-box></search-box>
+      <search-box ref="searchBox"></search-box>
+    </div>
+    <div class="shortcut-wrapper">
+      <div class="shortcut">
+        <div class="hot-key">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li class="item" v-for="item in hotkey" @click="addQuery(item.k)">
+              <span>{{item.k}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -12,12 +24,30 @@
 //  import Scroll from 'base/scroll/scroll'
 //  import Confirm from 'base/confirm/confirm'
 //  import Suggest from 'components/suggest/suggest'
-//  import {getHotKey} from 'api/search'
+  import {getHotKey} from 'api/search'
 //  import {ERR_OK} from 'api/config'
 //  import {playlistMixin} from 'common/js/mixin'
 //  import {mapGetters, mapActions} from 'vuex'
 
   export default {
+    data() {
+      return {
+        hotkey: []
+      }
+    },
+    methods: {
+      _getHotKey() {
+        getHotKey().then((res) => {
+          this.hotkey = res.data.hotkey.slice(0, 10)
+        })
+      },
+      addQuery(query) {
+        this.$refs.searchBox.addQuery(query)
+      }
+    },
+    created() {
+      this._getHotKey()
+    },
     components: {
       SearchBox
     }

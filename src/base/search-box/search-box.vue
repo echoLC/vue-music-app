@@ -24,6 +24,9 @@
     methods: {
       clear() {
         this.query = ''
+      },
+      addQuery(query) {
+        this.query = query
       }
     },
     created() {
