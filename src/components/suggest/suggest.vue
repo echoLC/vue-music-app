@@ -1,21 +1,23 @@
 <template>
-  <div class="suggest">
-    <ul class="suggest-list">
-      <li class="suggest-item" v-for="item in result">
-        <div class="icon">
-          <i :class="getIconCls(item)"></i>
-        </div>
-        <div class="name">
-          <p class="text" v-html="getDisplayName(item)"></p>
-        </div>
-      </li>
-    </ul>
-  </div>
+  <scroll :data="result">
+    <div class="suggest">
+      <ul class="suggest-list">
+        <li class="suggest-item" v-for="item in result">
+          <div class="icon">
+            <i :class="getIconCls(item)"></i>
+          </div>
+          <div class="name">
+            <p class="text" v-html="getDisplayName(item)"></p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </scroll>
 </template>
 
 <script type="text/ecmascript-6">
-//  import Scroll from 'base/scroll/scroll'
-//  import Loading from 'base/loading/loading'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
 //  import NoResult from 'base/no-result/no-result'
   import {search} from 'api/search'
   import {ERR_OK} from 'api/config'
@@ -51,7 +53,6 @@
         search(this.query, this.page, this.showSinger, perpage).then((res) => {
           if (res.code === ERR_OK) {
             this.result = this._genResult(res.data)
-            console.log(this.result)
           }
         })
       },
@@ -95,7 +96,8 @@
       }
     },
     components: {
-
+      Scroll,
+      Loading
     }
   }
 </script>
