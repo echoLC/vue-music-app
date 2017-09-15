@@ -41,16 +41,15 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapActions, mapGetters, mapMutations} from 'vuex'
+  import {mapActions} from 'vuex'
   import {playMode} from 'common/js/config'
   import Scroll from 'base/scroll/scroll'
   import Confirm from 'base/confirm/confirm'
-  import {shuffle} from 'common/js/util'
 //  import AddSong from 'components/add-song/add-song'
-//  import {playerMixin} from 'common/js/mixin'
+  import {playerMixin} from 'common/js/mixin'
 
   export default {
-//    mixins: [playerMixin],
+    mixins: [playerMixin],
     data() {
       return {
         showFlag: false,
@@ -60,30 +59,9 @@
     computed: {
       modeText() {
         return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
-      },
-      iconMode() {
-        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-      },
-      ...mapGetters([
-        'sequenceList',
-        'mode',
-        'playlist',
-        'currentSong'
-      ])
+      }
     },
     methods: {
-      changeMode() {
-        const mode = (this.mode + 1) % 3
-        this.setPlayMode(mode)
-        let list = null
-        if (mode === playMode.random) {
-          list = shuffle(this.sequenceList)
-        } else {
-          list = this.sequenceList
-        }
-        this.resetCurrentIndex(list)
-        this.setPlaylist(list)
-      },
       resetCurrentIndex(list) {
         let index = list.findIndex((item) => {
           return item.id === this.currentSong.id
@@ -136,12 +114,6 @@
       },
       addSong() {
       },
-      ...mapMutations({
-        setCurrentIndex: 'SET_CURRENT_INDEX',
-        setPlayingState: 'SET_PLAYING_STATE',
-        setPlayMode: 'SET_PLAY_MODE',
-        setPlaylist: 'SET_PLAYLIST'
-      }),
       ...mapActions([
         'deleteSong',
         'clearSongList'
