@@ -54,6 +54,12 @@ export const playerMixin = {
       this.resetCurrentIndex(list)
       this.setPlaylist(list)
     },
+    resetCurrentIndex(list) {
+      let index = list.findIndex((item) => {
+        return item.id === this.currentSong.id
+      })
+      this.setCurrentIndex(index)
+    },
     ...mapMutations({
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE',

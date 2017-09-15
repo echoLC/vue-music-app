@@ -282,12 +282,6 @@
           this.currentLyric.seek(currentTime * 1000)
         }
       },
-      resetCurrentIndex(list) {
-        let index = list.findIndex((item) => {
-          return item.id === this.currentSong.id
-        })
-        this.setCurrentIndex(index)
-      },
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
           this.currentLyric = new Lyric(lyric, this.handleLyric)

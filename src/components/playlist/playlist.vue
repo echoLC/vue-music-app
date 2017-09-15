@@ -62,12 +62,6 @@
       }
     },
     methods: {
-      resetCurrentIndex(list) {
-        let index = list.findIndex((item) => {
-          return item.id === this.currentSong.id
-        })
-        this.setCurrentIndex(index)
-      },
       show() {
         this.showFlag = true
         setTimeout(() => {
