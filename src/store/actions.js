@@ -90,3 +90,28 @@ export function deleteSearchHistory({commit}, query) {
 export function clearSearchHistory({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
 }
+
+export function deleteSong({commit, state}, song) {
+  let playlist = state.playlist.slice()
+  let sequencelist = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  let pIndex = findIndex(song, playlist)
+  playlist.splice(pIndex, 1)
+  let sIndex = findIndex(song, sequencelist)
+  sequencelist.splice(sIndex, 1)
+  if (currentIndex > pIndex || currentIndex === playlist.length) {
+    currentIndex--
+  }
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequencelist)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+  const playState = playlist.length > 0
+  commit(types.SET_PLAYING_STATE, playState)
+}
+
+export function clearSongList({commit}) {
+  commit(types.SET_PLAYLIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PLAYING_STATE, false)
+}
