@@ -21,6 +21,7 @@
     <div v-show="!hasMore && !result.length" class="no-result-wrapper">
       <!--<no-result title="抱歉，暂无搜索结果"></no-result>-->
     </div>
+    <router-view></router-view>
   </scroll>
 </template>
 
