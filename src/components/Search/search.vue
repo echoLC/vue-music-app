@@ -109,9 +109,11 @@
     },
     watch: {
       query(newQuery) {
-        setTimeout(() => {
-          this.$refs.shortcut.refresh()
-        }, 20)
+        if (!newQuery) {
+          setTimeout(() => {
+            this.$refs.shortcut.refresh()
+          }, 20)
+        }
       }
     }
   }
