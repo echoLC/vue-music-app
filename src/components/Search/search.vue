@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
-      <suggest ref="suggest" :query="query"></suggest>
+      <suggest ref="suggest" :query="query" @listScroll="blurInput"></suggest>
     </div>
   </div>
 </template>
@@ -40,6 +40,9 @@
       }
     },
     methods: {
+      blurInput() {
+        this.$refs.searchBox.blur()
+      },
       _getHotKey() {
         getHotKey().then((res) => {
           if (res.code === ERR_OK) {
