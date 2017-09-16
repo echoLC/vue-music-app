@@ -72,7 +72,8 @@ export const playerMixin = {
 export const searchMixin = {
   data() {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 120
     }
   },
   computed: {
@@ -89,6 +90,9 @@ export const searchMixin = {
     },
     onQueryChange(query) {
       this.query = query
+    },
+    addQuery(query) {
+      this.$refs.searchBox.addQuery(query)
     },
     ...mapActions([
       'saveSearchHistory',
