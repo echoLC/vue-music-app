@@ -1,7 +1,7 @@
 /**
  * Created by echoLC on 2017/9/10.
  */
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {shuffle} from 'common/js/util'
 import {playMode} from 'common/js/config'
 
@@ -66,5 +66,33 @@ export const playerMixin = {
       setPlayMode: 'SET_PLAY_MODE',
       setPlaylist: 'SET_PLAYLIST'
     })
+  }
+}
+
+export const searchMixin = {
+  data() {
+    return {
+      query: ''
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods: {
+    blurInput() {
+      this.$refs.searchBox.blur()
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query)
+    },
+    onQueryChange(query) {
+      this.query = query
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
   }
 }
